@@ -16,17 +16,17 @@ public class BoardService {
 
 	@Autowired
 	private BoardMapper mapper;
-	
+
 	@Autowired
 	private ReplyMapper replyMapper;
-	
-	public List<BoardDto> listBoard() {
+
+	public List<BoardDto> listBoard(String type, String keyword) {
 		// TODO Auto-generated method stub
-		return mapper.selectBoardAll();
+		return mapper.selectBoardAll(type, "%" + keyword + "%");
 	}
 
 	public boolean insertBoard(BoardDto board) {
-//		board.setInserted(LocalDateTime.now());
+		//		board.setInserted(LocalDateTime.now());
 		return mapper.insertBoard(board) == 1;
 	}
 
@@ -44,13 +44,9 @@ public class BoardService {
 	public boolean deleteBoard(int id) {
 
 		replyMapper.deleteByBoardId(id);
-		
+
 		return mapper.deleteBoard(id) == 1;
 	}
 
+
 }
-
-
-
-
-
