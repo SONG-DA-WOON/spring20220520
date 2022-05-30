@@ -4,11 +4,14 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.choong.spr.mapper.BoardMapper">
 
-	<select id="selectBoardAll"
-		resultType="com.choong.spr.domain.BoardDto">
-		SELECT b.id, b.title, b.inserted, COUNT(r.id) numOfReply
-		FROM Board b
-		LEFT JOIN Reply r ON b.id = r.board_id
+	<select id="selectBoardAll" resultType="com.choong.spr.domain.BoardDto">
+		SELECT b.id, 
+			   b.title, 
+			   b.inserted, 
+			   COUNT(r.id) numOfReply,
+			   m.nickName writerNickName 
+		FROM Board b LEFT JOIN Reply r ON b.id = r.board_id
+						  JOIN Member m ON b.memberId = m.id
 
 		<if test="keyword != '%%'">
 
@@ -34,15 +37,21 @@
 
 	<insert id="insertBoard" useGeneratedKeys="true" keyColumn="id"
 		keyProperty="id">
-		INSERT INTO Board (title, body)
-		VALUES (#{title}, #{body})
+		INSERT INTO Board (title, body, memberId)
+		VALUES (#{title}, #{body}, #{memberId})
 	</insert>
 
 	<select id="selectBoardById"
 		resultType="com.choong.spr.domain.BoardDto">
-		SELECT b.id, b.title, b.body, b.inserted, COUNT(r.id)
-		numOfReply
+		SELECT b.id,
+			   b.title, 
+			   b.body, 
+			   b.inserted, 
+			   COUNT(r.id) numOfReply,
+			   m.id memberId,
+			   m.nickName writerNickName
 		FROM Board b LEFT JOIN Reply r ON b.id = r.board_id
+					      JOIN Member m ON b.memberId = m.id
 		WHERE
 		b.id = #{id}
 	</select>
@@ -58,5 +67,17 @@
 	<delete id="deleteBoard">
 		DELETE FROM Board
 		WHERE id = #{id }
+	</delete>
+	
+	<select id="listByMemberId" resultType="com.choong.spr.domain.BoardDto">
+		SELECT id
+		FROM Board
+		WHERE memberId = #{memberId}
+	</select>
+	
+	<delete id="deleteByMemberId">
+	DELETE FROM Board
+	WHERE memberId = #{memberId}
+	
 	</delete>
 </mapper>
